@@ -5,12 +5,12 @@ var util = require('util');
 var Files = {};
 
 var ffmpeg = require('fluent-ffmpeg');
-
+var numUsers = 0;
 module.exports = function(http){
 	var io = socketIO.listen(http);
     
 	io.sockets.on('connection', function (socket) {
-        	console.log("connection");
+        console.log("connection");
   		socket.on('Start', function (data) { //data contains the variables that we passed through in the html file
 			var Name = data['Name'];
 			Files[Name] = {  //Create a new Entry in The Files Variable
@@ -96,6 +96,65 @@ module.exports = function(http){
 				socket.emit('MoreData', { 'Place' : Place, 'Percent' :  Percent});
 			}
 		});
+		
+		
+		
+		var addedUser = false;
+
+  // when the client emits 'new message', this listens and executes
+  socket.on('new message', function (data) {
+    // we tell the client to execute 'new message'
+    socket.broadcast.emit('new message', {
+      username: socket.username,
+      message: data
+    });
+  });
+
+  // when the client emits 'add user', this listens and executes
+  socket.on('add user', function (username) {
+    if (addedUser) return;
+
+    // we store the username in the socket session for this client
+    socket.username = username;
+    ++numUsers;
+    addedUser = true;
+    socket.emit('login', {
+      numUsers: numUsers
+    });
+    // echo globally (all clients) that a person has connected
+    socket.broadcast.emit('user joined', {
+      username: socket.username,
+      numUsers: numUsers
+    });
+  });
+
+  // when the client emits 'typing', we broadcast it to others
+  socket.on('typing', function () {
+    socket.broadcast.emit('typing', {
+      username: socket.username
+    });
+  });
+
+  // when the client emits 'stop typing', we broadcast it to others
+  socket.on('stop typing', function () {
+    socket.broadcast.emit('stop typing', {
+      username: socket.username
+    });
+  });
+
+  // when the user disconnects.. perform this
+  socket.on('disconnect', function () {
+    if (addedUser) {
+      --numUsers;
+
+      // echo globally that this client has left
+      socket.broadcast.emit('user left', {
+        username: socket.username,
+        numUsers: numUsers
+      });
+    }
+  });
+		
 	});
 	return io;
 };

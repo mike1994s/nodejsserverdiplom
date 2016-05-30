@@ -12,30 +12,34 @@ function init(){
 }
 init();
 
-module.exports = function(app){
+module.exports = function(app, http){
     app.get('/', function(req, res){
-	res.render('index');
+		
+		res.render('index');
     });
+	app.get('/chat', function(req, res){
+		res.render('chat');
+	});
     app.get('/load/:w/:h/:video', function(req, res){
-	var w = req.params.w;
-	var h = req.params.h;
-	var videoName = req.params.video;
-	var newDim = new Dimension(w, h);
-	var index;
-	var len = dimensions.length;
-	var dimAppropriate;
-	var min = 10000000000;
-	for (index = 0; index < len; ++index) {
-		var dif =  dimensions[index].getDiff(newDim);
-		console.log(dif);
-		if (min >dif){
-			
-			min = dif;
-			dimAppropriate = dimensions[index];
-		}	
-	};
+		var w = req.params.w;
+		var h = req.params.h;
+		var videoName = req.params.video;
+		var newDim = new Dimension(w, h);
+		var index;
+		var len = dimensions.length;
+		var dimAppropriate;
+		var min = 10000000000;
+		for (index = 0; index < len; ++index) {
+			var dif =  dimensions[index].getDiff(newDim);
+			console.log(dif);
+			if (min >dif){
+				
+				min = dif;
+				dimAppropriate = dimensions[index];
+			}	
+		};
 //	req.flash('info', 'Flashed message')
-	var strPath = dimAppropriate.getPath();
-  	res.redirect('/'+strPath + "/" + videoName);
+		var strPath = dimAppropriate.getPath();
+		res.redirect('/'+strPath + "/" + videoName);
     });
 };

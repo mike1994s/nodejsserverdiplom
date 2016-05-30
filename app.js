@@ -2,11 +2,13 @@
 var express  = require('express');
 var app = express();
 var http = require('http').createServer(app);
+var path = require('path');
 
+app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
 app.use(express.static('Video'));
 
-require('./app/routes.js')(app);
+require('./app/routes.js')(app, http);
 
 http.listen(8090);
 
