@@ -19,7 +19,7 @@ function DataGame(){
 var singleton = function singleton(){
     //defining a var instead of this (works for variable & function) will create a private definition
    var _games = [];
-   
+   var _rooms = [];
    this.add = function(game){
         _games.push(game);
     };
@@ -27,7 +27,13 @@ var singleton = function singleton(){
     this.get = function(){
         return _games;
     };
- 
+	this.addRoom = function(roomId){
+		console.log("Add Room " + roomId);
+		_rooms.push(roomId);
+	}
+	this.getRooms = function(){
+		return _rooms;
+	}
     if(singleton.caller != singleton.getInstance){
         throw new Error("This object cannot be instanciated");
     }

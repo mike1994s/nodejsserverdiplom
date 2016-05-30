@@ -30,14 +30,24 @@ function SaveData(body, file){
 
 module.exports = function(app, http){
     app.get('/', function(req, res){
- 
 		res.render('index');
     });
+	app.get('/joining/:room', function(req, res){
+		var room = req.params.room;
+		console.log(room);
+		res.cookie('user', room);
+		res.cookie('isLead', '0');
+		res.redirect('/chat');
+	});
 	app.get('/chat', function(req, res){
 		res.render('chat');
 	});
 	app.get('/join', function(req, res){
-		res.send("answer");
+		var roomsData = dataGame.getRooms();
+		console.dir(roomsData);
+			res.render('rooms', {
+                rooms: roomsData
+            });
 	});
 	app.get('/create', function(req, res){
 		res.render('leading_page');

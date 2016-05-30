@@ -1,0 +1,16 @@
+ <!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+		<title> </title>
+		<script src="/socket.io/socket.io.js"></script>
+	</head>
+	<body>  
+	<% for(var i=0; i<rooms.length; i++) {%>
+		<a href="/joining/<%= rooms[i] %>"> Присоединиться к чату <%= rooms[i] %> </a><br/><br/><br/>
+	<% } %>
+		
+	 
+	 
+	</body>
+</html>
