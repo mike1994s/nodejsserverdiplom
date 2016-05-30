@@ -3,7 +3,12 @@ var express  = require('express');
 var app = express();
 var http = require('http').createServer(app);
 var path = require('path');
-
+ 
+var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
+app.use(bodyParser.json()); // for parsing application/json
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
 app.use(express.static('Video'));
@@ -23,5 +28,7 @@ function handler (req, res) {
     res.end(data);
   });
 }
+
+ 
 
 require('./app/socket.js')(http);
