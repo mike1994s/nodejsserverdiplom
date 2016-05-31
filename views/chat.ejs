@@ -3,6 +3,15 @@
 <html>
   <head>
     <title>Socket.IO chat</title>
+	<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+ 
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+
+ 
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+ 
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
       body { font: 13px Helvetica, Arial; }
@@ -15,22 +24,57 @@
     </style>
   </head>
   <body>
+	<div class="row">
+	<div class="container"  >
+		Оцени последнее
+	<button type="button" id="bad" class="btn btn-default btn-lg">
+  <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span> 
+</button>
+<button type="button" id="good" class="btn btn-default btn-lg">
+  <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span> 
+</button>
+		<span id="current_word"> </span>
+	</div>
+	</div>
     <ul id="messages"></ul>
     <form action="">
+	 
       <input id="m" autocomplete="off" /><button>Send</button>
     </form>
   <script src="/socket.io/socket.io.js"></script>
- 
-    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    
     <script>
+	  var last = "";
       var socket = io();
+	  $(document).on('click', '#good', function(){
+			alert("good word is " + last);
+			socket.emit('word_good', $("#current_word").text());
+	  });
+	 
+	   $(document).on('click', '#bad', function(){
+			alert("bad word is " + last);
+			socket.emit('word_bad', $("#current_word").text());
+	  });
+	  
       $('form').submit(function(){
-        socket.emit('chat message', $('#m').val());
-        $('#m').val('');
-        return false;
+          socket.emit('var', $('#m').val());
+          $('#m').val('');
+          return false;
       });
-      socket.on('chat message', function(msg){
-        $('#messages').append($('<li>').text(msg));
+      socket.on('var', function(msg){
+			$('#messages').append($('<li>').text(msg));
+      });
+	  socket.on('word_bad', function(msg){
+		$('#messages').append($('<li>').text(msg).css("color","red"));
+	 });
+	  
+	socket.on('word_good', function(msg){
+		$('#messages').append($('<li>').text(msg).css("color","green"));
+	 });
+	  socket.on('estimate', function(msg){
+		alert(msg);
+        $('#messages').append($('<li>').text(msg + " PLease Estimate"));
+		$("#current_word").text(msg);
       });
     </script>
   </body>

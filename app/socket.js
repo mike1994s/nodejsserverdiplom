@@ -15,8 +15,18 @@ module.exports = function(http){
 		this.room = room; 
 	}
 	var socketsArr = [];
+	
+	function getSocketLeadByRoom(idRoom){
+		for (var i = 0; i < socketsArr.length; ++i){
+			if (socketsArr[i].room = idRoom){
+				return socketsArr[i].socket;
+			}
+		}
+		return null;
+	}
+	
 	io.sockets.on('connection', function (socket) {
-	console.log("connection");
+		console.log("connection");
 		function parseCookies () {
 			console.dir(socket.request.headers.cookie);
             var list = {},
@@ -41,11 +51,24 @@ module.exports = function(http){
 			}
 		}
 		   // when the client emits 'new message', this listens and executes
-		socket.on('chat message', function(msg){
-		console.log(msg);
-			socket.to(userID).emit('chat message', msg);
+		socket.on('var', function(msg){
+			var masterSocket = getSocketLeadByRoom(userID);
+			console.log(userID);
+			if (masterSocket == null){
+				socket.leave(userID);
+			}else {
+				console.log("send msg estimate");
+				masterSocket.emit("estimate", msg);
+			}
+ 
+			socket.to(userID).emit('var', msg);
 		});
-		 
+		socket.on('word_good', function(msg){
+			socket.to(userID).emit('word_good', msg);
+		});
+		socket.on('word_bad', function(msg){
+			socket.to(userID).emit('word_bad', msg);
+		});
 	});
 	
 	return io;
