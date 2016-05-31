@@ -16,6 +16,14 @@ module.exports = function(http){
 	}
 	var socketsArr = [];
 	
+	function getMediaDataWithRoom(idRoom){
+		var allGames = dataGame.get();
+		for (var i = 0; i < allGames.length;++i){
+			if (allGames[i].leader == idRoom){
+				return allGames[i].media.fileName;
+			}
+		}
+	}
 	function getSocketLeadByRoom(idRoom){
 		for (var i = 0; i < socketsArr.length; ++i){
 			if (socketsArr[i].room = idRoom){
@@ -44,6 +52,9 @@ module.exports = function(http){
 		console.log('user ID' + userID);
 		if ( userID != undefined){
 			socket.join(userID);
+			var file = getMediaDataWithRoom(userID);
+			
+			socket.emit("media", file);
 			var newUser = new Leader(socket, userID);
 			if (socket.isLead  == '1'){
 				dataGame.addRoom(userID);
