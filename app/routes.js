@@ -1,7 +1,11 @@
 var Dimension = require('./Dimension').Dimension;
 var MapDimensionToPath = require('./Dimension').MapDimensionToPath;
 var SimpleStrategy = require('./SimpleStrategy');
+var uploadPhoto = require('./Saver').UploadPhoto;
+var uploadVideo = require('./Saver').UploadVideo;
+var uploadAudio = require('./Saver').UploadAudio;
 var dimensions = [];
+
 
 
 function init(){
@@ -11,14 +15,91 @@ function init(){
 	dimensions.push(new MapDimensionToPath(dimSec, "640x400", new SimpleStrategy()));
 }
 init();
+var dataGame =  require('./DataGame').DataGame;
+var MediaData =  require('./DataGame').MediaData;
+var GameData =  require('./DataGame').GameData;
+
+function SaveData(body, file){
+	var media = new MediaData(file.originalName,
+	file.encoding, file.mimetype, file.filename, file.size);
+	var userID = body.id_user;
+	var word = body.word;
+	var gameData = new GameData(userID, word, media);
+	dataGame.add(gameData);
+}
 
 module.exports = function(app, http){
     app.get('/', function(req, res){
-		
 		res.render('index');
     });
+	app.get('/joining/:room', function(req, res){
+		var room = req.params.room;
+		console.log(room);
+		res.cookie('user', room);
+		res.cookie('isLead', '0');
+		res.redirect('/chat');
+	});
 	app.get('/chat', function(req, res){
 		res.render('chat');
+	});
+	app.get('/join', function(req, res){
+		var roomsData = dataGame.getRooms();
+		console.dir(roomsData);
+			res.render('rooms', {
+                rooms: roomsData
+            });
+	});
+	app.get('/create', function(req, res){
+		res.render('leading_page');
+	});
+	app.get('/show', function(req, res){
+		var all = dataGame.get();
+		console.dir(all);
+		res.send("ok");
+	});
+	app.post('/photo',function(req,res){
+		uploadPhoto(req, res, function(err) {
+			if(err) {
+				console.log(err);
+				return res.end("Error uploading file.");
+			}
+			console.log(req.body) // form fields
+			console.log(req.file) // form files
+			SaveData(req.body,req.file);
+			res.cookie('user', req.body.id_user);
+			res.cookie('isLead', '1');
+			res.redirect("/create");
+		});
+	});
+
+	app.post('/video',function(req,res){
+		uploadVideo(req, res, function(err) {
+			if(err) {
+				console.log(err);
+				return res.end("Error uploading file.");
+			}
+			console.log(req.body) // form fields
+			console.log(req.file) // form files
+			SaveData(req.body,req.file);
+			res.cookie('user', req.body.id_user);
+			res.cookie('isLead', '1');
+			res.redirect("/create");
+		});
+	});
+	
+	app.post('/audio',function(req,res){
+		uploadAudio(req, res, function(err) {
+			if(err) {
+				console.log(err);
+				return res.end("Error uploading file.");
+			}
+			console.log(req.body) // form fields
+			console.log(req.file) // form files
+			SaveData(req.body,req.file);
+			res.cookie('user', req.body.id_user);
+			res.cookie('isLead', '1');
+			res.redirect("/create");
+		});
 	});
     app.get('/load/:w/:h/:video', function(req, res){
 		var w = req.params.w;
