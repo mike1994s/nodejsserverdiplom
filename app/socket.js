@@ -9,7 +9,7 @@ var numUsers = 0;
 var dataGame =  require('./DataGame').DataGame;
 module.exports = function(http){
 	var io = socketIO.listen(http);
-
+	var cashWords = {};
     function Leader(socket, room){
 		this.socket = socket;
 		this.room = room; 
@@ -21,6 +21,18 @@ module.exports = function(http){
 		for (var i = 0; i < allGames.length;++i){
 			if (allGames[i].leader == idRoom){
 				return allGames[i].media.fileName;
+			}
+		}
+	}
+	function getRightWordForRoom(idRoom){
+		if (idRoom in cashWords){
+			return cashWords[idRoom];
+		}
+		var allGames = dataGame.get();
+		for (var i = 0; i < allGames.length;++i){
+			if (allGames[i].leader == idRoom){
+				cashWords[idRoom] = allGames[i].word;
+				return cashWords[idRoom];
 			}
 		}
 	}
@@ -52,6 +64,7 @@ module.exports = function(http){
 		console.log('user ID' + userID);
 		if ( userID != undefined){
 			socket.join(userID);
+			socket.room = userID;
 			var file = getMediaDataWithRoom(userID);
 			
 			socket.emit("media", file);
@@ -62,12 +75,21 @@ module.exports = function(http){
 			}
 		}
 		   // when the client emits 'new message', this listens and executes
+		function sendWin(socket, msg){
+			socket.to(userID).emit('word_win', msg);
+			socket.emit('word_win', msg);
+		}
 		socket.on('var', function(msg){
 			var masterSocket = getSocketLeadByRoom(userID);
+			var wordRight = getRightWordForRoom(userID);
+			if (msg == wordRight){
+				sendWin(socket, msg);
+			}
 			console.log(userID);
 			if (masterSocket == null){
-				socket.leave(userID);
+				sendWin(socket, "external error");
 			}else {
+				console.dir(masterSocket);
 				console.log("send msg estimate");
 				masterSocket.emit("estimate", msg);
 			}
@@ -79,6 +101,14 @@ module.exports = function(http){
 		});
 		socket.on('word_bad', function(msg){
 			socket.to(userID).emit('word_bad', msg);
+		});
+		socket.on('word_win', function(msg){
+			sendWin(socket, msg);
+		});
+		socket.on('exit', function(msg){
+			
+			console.log('exit from rooom  = ' + userID);
+			socket.leave(userID);
 		});
 	});
 	
