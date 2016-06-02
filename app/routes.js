@@ -34,7 +34,7 @@ module.exports = function(app, http){
     });
 	app.get('/joining/:room', function(req, res){
 		var room = req.params.room;
-		console.log(room);
+		//console.log(room);
 		res.cookie('user', room);
 		res.cookie('isLead', '0');
 		res.redirect('/chat');
@@ -44,13 +44,17 @@ module.exports = function(app, http){
 	});
 	app.get('/join', function(req, res){
 		var roomsData = dataGame.getRooms();
-		console.dir(roomsData);
+		//console.dir(roomsData);
 			res.render('rooms', {
                 rooms: roomsData
             });
 	});
 	app.get('/create', function(req, res){
-		res.render('leading_page');
+		var room = req.cookies['user'] || "";
+		console.log("room is " + room);
+		res.render('leading_page', {
+			room : room
+		});
 	});
 	app.get('/show', function(req, res){
 		var all = dataGame.get();

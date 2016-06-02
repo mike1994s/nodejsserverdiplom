@@ -41,7 +41,7 @@
 		
 	</div>
 	</div>
-	<div id="media"> </div> 
+	<div id="media"><a href=""> </a> </div> 
     <ul id="messages"></ul>
     <form action="">
 	 
@@ -78,19 +78,26 @@
 		$('#messages').append($('<li>').text(msg).css("color","red"));
 	 });
 	 socket.on('media', function(file){
-		$('#media').append($('<a>').text("Файл игры").prop('href', 'http://localhost:8090/' + file));
+		$('#media a').text("Файл игры").prop('href', 'http://localhost:8090/' + file);
 	 });
 	socket.on('word_good', function(msg){
 		$('#messages').append($('<li>').text(msg).css("color","green"));
 	 });
 	 socket.on('word_win', function(msg){
 		$('#answer').text(msg);
-		socket.emit('exit');
+	//	socket.emit('exit');
+	 });
+	 socket.on('new_user', function(newUser){
+		alert(newUser.isLead);
 	 });
 	  socket.on('estimate', function(msg){
-		alert(msg);
+ 
         $('#messages').append($('<li>').text(msg + " PLease Estimate"));
 		$("#current_word").text(msg);
+      });
+	  socket.on('you_win', function(msg){
+		alert('You Win');
+        window.location.href = "http://localhost:8090/create";
       });
     </script>
   </body>

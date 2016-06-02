@@ -12,21 +12,21 @@
 	<br/>
 	<form id="uploadPhoto" enctype = "multipart/form-data"  action="/photo" method="post">
 		<input type="file" name="userPhoto" />
-				<input type="text" name="id_user" />
-		<input type="text" name="word" />
+		<input type="text" name="id_user" value="<%= room %>" />
+		<input type="text" name="word"  />
 		<input type="submit" value="Upload Image" name="submit">
 	</form>	 
 	<br/>
 		<form id="uploadAudio" enctype = "multipart/form-data"  action="/audio" method="post">
 		<input type="file" name="userAudio" />
-		<input type="text" name="id_user" />
+		<input type="text" name="id_user"  value="<%= room %>" />
 		<input type="text" name="word" />
 		<input type="submit" value="Upload Audio" name="submit">
 	</form>	 
 	<br/>
 	<form id="uploadVideo" enctype = "multipart/form-data"  action="/video" method="post">
 		<input type="file" name="userVideo" />
-				<input type="text" name="id_user" />
+		<input type="text" name="id_user" value="<%= room %>" />
 		<input type="text" name="word" />
 		<input type="submit" value="Upload Video" name="submit">
 	</form>	 

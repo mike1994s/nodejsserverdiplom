@@ -25,9 +25,9 @@ module.exports = function(http){
 		}
 	}
 	function getRightWordForRoom(idRoom){
-		if (idRoom in cashWords){
+		/*if (idRoom in cashWords){
 			return cashWords[idRoom];
-		}
+		} */
 		var allGames = dataGame.get();
 		for (var i = 0; i < allGames.length;++i){
 			if (allGames[i].leader == idRoom){
@@ -44,11 +44,15 @@ module.exports = function(http){
 		}
 		return null;
 	}
-	
+	function resetLeadByRoom(idRoom){
+		 socketsArr = socketsArr.filter(function (el) {
+                      return el.room == idRoom;
+			 });
+	}
 	io.sockets.on('connection', function (socket) {
 		console.log("connection");
 		function parseCookies () {
-			console.dir(socket.request.headers.cookie);
+			//console.dir(socket.request.headers.cookie);
             var list = {},
                 rc = socket.request.headers.cookie;
 
@@ -68,16 +72,25 @@ module.exports = function(http){
 			var file = getMediaDataWithRoom(userID);
 			
 			socket.emit("media", file);
+			socket.to(userID).emit("media", file);
 			var newUser = new Leader(socket, userID);
 			if (socket.isLead  == '1'){
 				dataGame.addRoom(userID);
+				resetLeadByRoom(userID);
 				socketsArr.push(newUser);
 			}
+			socket.to(userID).emit('new_user', {
+				isLead : socket.isLead,
+				text : "text"
+			});
 		}
 		   // when the client emits 'new message', this listens and executes
 		function sendWin(socket, msg){
+			resetLeadByRoom(socket.room);
 			socket.to(userID).emit('word_win', msg);
 			socket.emit('word_win', msg);
+			socket.emit('you_win', msg);
+			console.log('Sended all message');
 		}
 		socket.on('var', function(msg){
 			var masterSocket = getSocketLeadByRoom(userID);
@@ -89,11 +102,10 @@ module.exports = function(http){
 			if (masterSocket == null){
 				sendWin(socket, "external error");
 			}else {
-				console.dir(masterSocket);
+			//	console.dir(masterSocket);
 				console.log("send msg estimate");
 				masterSocket.emit("estimate", msg);
 			}
- 
 			socket.to(userID).emit('var', msg);
 		});
 		socket.on('word_good', function(msg){
@@ -108,7 +120,7 @@ module.exports = function(http){
 		socket.on('exit', function(msg){
 			
 			console.log('exit from rooom  = ' + userID);
-			socket.leave(userID);
+		//	socket.leave(userID);
 		});
 	});
 	
