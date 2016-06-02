@@ -46,7 +46,7 @@ module.exports = function(http){
 	}
 	function resetLeadByRoom(idRoom){
 		 socketsArr = socketsArr.filter(function (el) {
-                      return el.room == idRoom;
+                      return el.room != idRoom;
 			 });
 	}
 	io.sockets.on('connection', function (socket) {
