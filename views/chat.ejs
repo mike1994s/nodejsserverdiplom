@@ -25,7 +25,8 @@
   </head>
   <body>
 	<div class="row">
-	<div class="container"  >
+	<div class="alert alert-success" role="alert" id="answer"></div>
+	<div class="container">
 		Оцени последнее
 	<button type="button" id="bad" class="btn btn-default btn-lg">
   <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span> 
@@ -33,9 +34,14 @@
 <button type="button" id="good" class="btn btn-default btn-lg">
   <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span> 
 </button>
+<button type="button" id="yes" class="btn btn-default btn-lg">
+  <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> 
+</button>
 		<span id="current_word"> </span>
+		
 	</div>
 	</div>
+	<div id="media"><a href=""> </a> </div> 
     <ul id="messages"></ul>
     <form action="">
 	 
@@ -55,10 +61,14 @@
 			alert("bad word is " + last);
 			socket.emit('word_bad', $("#current_word").text());
 	  });
-	  
+	  $(document).on('click', '#yes', function(){
+			socket.emit('word_win', $("#current_word").text());
+	  });
       $('form').submit(function(){
           socket.emit('var', $('#m').val());
+		  $('#messages').append($('<li>').text($('#m').val()).css("color","aqua"));
           $('#m').val('');
+		  
           return false;
       });
       socket.on('var', function(msg){
@@ -67,14 +77,27 @@
 	  socket.on('word_bad', function(msg){
 		$('#messages').append($('<li>').text(msg).css("color","red"));
 	 });
-	  
+	 socket.on('media', function(file){
+		$('#media a').text("Файл игры").prop('href', 'http://localhost:8090/' + file);
+	 });
 	socket.on('word_good', function(msg){
 		$('#messages').append($('<li>').text(msg).css("color","green"));
 	 });
+	 socket.on('word_win', function(msg){
+		$('#answer').text(msg);
+	//	socket.emit('exit');
+	 });
+	 socket.on('new_user', function(newUser){
+		alert(newUser.isLead);
+	 });
 	  socket.on('estimate', function(msg){
-		alert(msg);
+ 
         $('#messages').append($('<li>').text(msg + " PLease Estimate"));
 		$("#current_word").text(msg);
+      });
+	  socket.on('you_win', function(msg){
+		alert('You Win');
+        window.location.href = "http://localhost:8090/create";
       });
     </script>
   </body>

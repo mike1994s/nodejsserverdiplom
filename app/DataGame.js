@@ -21,6 +21,12 @@ var singleton = function singleton(){
    var _games = [];
    var _rooms = [];
    this.add = function(game){
+		console.log(game);
+		console.log(_games);
+		 _games = _games.filter(function (el) {
+                      return el.leader != game.leader;
+			 });
+		console.log(_games);
         _games.push(game);
     };
  
