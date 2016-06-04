@@ -1,0 +1,1 @@
+idphone=test&fsm=543534&id=12342&friendsId[0]=13243&friendsId[1]=5345345&friendsId[2]=5345353&type=vk
