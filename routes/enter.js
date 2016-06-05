@@ -17,10 +17,19 @@ exports.post = function(req, res) {
     console.log("{/enter} have been called");
     console.log(req.body);
     var obj = req.body;
+    if (!obj.idphone){
+	res.json({
+	       code : "0",
+	       answer :"empty field",
+	       data : [],
+});
+	return;	
+     }
     
     console.log(obj.friendsId);
-    var promise = User.findOne({idphone :obj.idphone}).exec();
+    var promise = User.findOne({'id_phone':obj.idphone}).exec();
     promise.then(function(user) {
+	console.log("find" + user);
 	if (user == null){
 		user = new User({
  			id_phone: obj.idphone,
@@ -33,7 +42,6 @@ exports.post = function(req, res) {
 					 obj.friendsId,
 					 arrayNotContain);
 	}
-	console.log(user);
 	return user.save();
 })
 .then(function(user){
