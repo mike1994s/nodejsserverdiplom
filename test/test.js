@@ -6,7 +6,8 @@ var should = require("should");
 var server = supertest.agent("http://localhost:8090");
 
 // UNIT test begin
-
+var boundary = Math.random();
+var filename = "test.png";
 describe("SAMPLE unit test",function(){
 
   // #1 should return home page
@@ -28,7 +29,6 @@ describe("SAMPLE unit test",function(){
   });
 
   it("in correct request",function(done){
-
     // calling home page api
     server
     .post('/enter')
@@ -42,4 +42,19 @@ describe("SAMPLE unit test",function(){
       done();
     });
   });
+  
+  
+  it("in correct request UPLOAD",function(done){
+    // calling home page api
+    server
+    .post('/startgame')
+//    .set('Content-Type', 'multipart/form-data; boundary=' + boundary)
+    .send({in:"case you want to send json along with your file"})
+    .attach('image', 'test.png')
+    .end(function(err, res) {
+		  console.dir(res.body);
+                  //res.should.have.status(200); // 'success' status
+                  done();
+              });
+	});  
 });

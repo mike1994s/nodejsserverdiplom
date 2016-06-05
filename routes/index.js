@@ -3,5 +3,6 @@ module.exports = function(app) {
 	res.send("ok");
     })
     app.post('/enter', require('./enter').post);
+    app.post('/startgame', require('./startgame').post);
 
 }
