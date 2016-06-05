@@ -11,26 +11,11 @@ var schema =  new Schema({
    fsm : {
  	type: String,
    },
-   socials : [{
-      item: {
-        	type : String,
-	        enum : ['VK', 'FB'],
-	        default: 'VK',
-      },
-      id: {
-	type : String,
-     },   	
-  }],
-   friends : [{
-      item: {
-        	type : String,
-	        enum : ['VK', 'FB'],
-	        default: 'VK',
-      },
-      id: {
-	type : String,
-     },   	
-  }],
-
+   vk : {  
+     	id : {
+	    type : String,
+  	},
+ 	friends : [ String],
+   },
 });
 exports.User = mongoose.model('User', schema); 
