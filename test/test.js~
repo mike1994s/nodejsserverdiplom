@@ -46,7 +46,7 @@ describe("SAMPLE unit test",function(){
     .post('/startgame')
    .field('user[name]', 'Tobi')
    .field('user[email]', 'tobi@learnboost.com')
-   .attach('image', 'test.png')
+   .attach('image', 'path/to/tobi.png')
     .end(function(err,res){
  //	console.dir(res.body.data[0].user.vk);
         res.body.code.should.equal('0');
