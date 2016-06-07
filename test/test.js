@@ -28,7 +28,7 @@ describe("SAMPLE unit test",function(){
   it("correct request", function(done){
     server
     .post('/enter')
-    .send({idphone : "testMOcha", fsm : 20, id :"21423", friendsId: ["first", "sec", "third" ], type : "vk"})
+    .send({idphone : "testMochaid", fsm : 20, id :"21423", friendsId: ["first", "sec", "third" ], type : "vk"})
     .expect("Content-type",/json/)
     .expect(200)
     .end(function(err,res){
@@ -44,7 +44,7 @@ describe("SAMPLE unit test",function(){
    
     server
     .post('/startgame')
-   .field('idphone', 'mochaIDPhone')
+   .field('idphone', 'testMochaid')
    .field('word', 'MochaTestWord')
    .attach('file', 'test.png')
     .end(function(err,res){
@@ -86,6 +86,20 @@ describe("SAMPLE unit test",function(){
     .post('/startgame')
    .field('word', 'mWorde')
    .attach('file', 'test.png') 
+    .end(function(err,res){
+ //	console.dir(res.body.data[0].user.vk);
+        res.body.code.should.equal('0');
+	res.status.should.equal(200);
+      done();
+    });
+  });
+  it("START_GAME INVALID idphone",function(done){
+   
+    server
+    .post('/startgame')
+   .field('idphone', 'testUnknownIdPhone')
+   .field('word', 'MochaTestWord')
+   .attach('file', 'test.png')
     .end(function(err,res){
  //	console.dir(res.body.data[0].user.vk);
         res.body.code.should.equal('0');

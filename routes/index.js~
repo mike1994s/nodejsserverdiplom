@@ -1,4 +1,0 @@
-module.exports = function(app) {
-    app.post('/enter', require('./enter').get);
-
-}

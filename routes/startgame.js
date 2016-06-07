@@ -1,5 +1,6 @@
 var Game = require('../models/Game').Game;
 var path = require('path')
+var User = require('../models/User').User;
 var fs = require('fs');
 var _VK_TYPE = "vk";
 var _FB_TYPE = "fb"; 
@@ -61,14 +62,35 @@ exports.post = function(req, res) {
 				});
 			return;
 			}
-		console.log(game) // form files
-		res.json({
-			code :"1",
-			answer : "ok",
-			data : [{
+		 var promise = User.findOne({'id_phone':obj.idphone}).exec();
+	         promise.then(function(user) {
+	 		console.log("find" + user);
+			if (user == null){
+				res.json({
+	      	   			code : "0",
+	     	   			answer : "User Not Found",
+	       				data : [],
+				});
+				return;
+			}
+			console.log(game) // form files
+			res.json({
+				code :"1",
+				answer : "ok",
+				data : [{
 					game_one : game,
+					user : user
 				}],
 			});
+
+})
+.catch(function(err){
+	res.json({
+	       code : "0",
+	       answer : err,
+	       data : [],
+	});
+  });	
 		return;
 
 	   });
