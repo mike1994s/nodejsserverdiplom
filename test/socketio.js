@@ -21,13 +21,13 @@ describe("Chat Server",function(){
 			err.should.equal("");
 		}
 	   chatUser1.game = model;
-	   console.log(model);
+	  
 	   var client1 = io.connect(socketURL);
 
 
 	  client1.on('connect', function(data){
 	    client1.emit('handshake', chatUser1);
-	    console.log('after handshake');	
+	  
 	    var client3 = io.connect(socketURL);
 
 	    client3.on('connect', function(data){
@@ -59,7 +59,7 @@ describe("Chat Server",function(){
 	  var numUsers = 0;
 	  client1.on('new user', function(data){
 	    numUsers += 1;
-	     console.log(data);  
+	     
 
 	    if(numUsers === 2){ // проверка на то что отправляем только в указанную комнату
 	      data.message.should.equal(chatUser2.vk_id + " has joined.");
@@ -77,7 +77,7 @@ describe("Chat Server",function(){
 			err.should.equal("");
 		}
 	   chatUser1.game = model;
-	   console.log(model);
+	   
 	   var client1 = io.connect(socketURL);
 
 
@@ -103,7 +103,7 @@ describe("Chat Server",function(){
 	  var numUsers = 0;
 	  client1.on('new user', function(usersName){
 	    numUsers += 1;
-	     console.log(usersName);  
+	    
 
 	    if(numUsers === 2){ // проверка на то что отправляем только в указанную комнату
 	       client1.emit('start_game');
@@ -118,7 +118,7 @@ describe("Chat Server",function(){
 			err.should.equal("");
 		}
 	   chatUser1.game = model;
-	   console.log(model);
+	 
 	   var client1 = io.connect(socketURL);
 
 
@@ -138,8 +138,7 @@ describe("Chat Server",function(){
 	    });
 
 	    client2.on('word', function(data){
-	      	data.file.should.equal("uploads/file-1465376062453.png");
-		data.message.should.equal("start game");
+	     
 		client2.disconnect();
 	    });	     
 
@@ -148,15 +147,15 @@ describe("Chat Server",function(){
 	  var numUsers = 0;
 	  client1.on('new user', function(usersName){
 	    numUsers += 1;
-	     console.log(usersName);  
-
+	   
 	    if(numUsers === 2){ // проверка на то что отправляем только в указанную комнату
 	       client1.emit('start_game');
 	    }
 	  });
 	  
-	  client1.on('win', function(word){
-		word.should.equal('MochaTestWord');
+	  client1.on('win', function(data){
+		data.word.should.equal('MochaTestWord');
+		data.vk.should.equal('vk_id_second');
 		client1.disconnect();		      
 		
 	      	done();
@@ -172,7 +171,7 @@ it('Game Not Right Word', function(done){
 			err.should.equal("");
 		}
 	   chatUser1.game = model;
-	   console.log(model);
+	   
 	   var client1 = io.connect(socketURL);
 
 
@@ -207,8 +206,9 @@ it('Game Not Right Word', function(done){
 		data.message.should.equal("start game"); 
 	    });
 
-	    client4.on('word', function(word){
-	       word.should.equal('MochaTestWordTest');
+	    client4.on('word', function(data){
+	      data.word.should.equal('MochaTestWordTest');
+	      data.vk.should.equal('vk_id_second');
 	       client4.disconnect();
 	    });	        
 
@@ -219,15 +219,16 @@ it('Game Not Right Word', function(done){
 	  var numUsers = 0;
 	  client1.on('new user', function(usersName){
 	    numUsers += 1;
-	     console.log(usersName);  
+	     
 
 	    if(numUsers === 3){ // проверка на то что отправляем только в указанную комнату
 	       client1.emit('start_game');
 	    }
 	  });
 	  
-	  client1.on('win', function(word){
-		word.should.equal('MochaTestWord');
+	  client1.on('word', function(data){
+		data.word.should.equal('MochaTestWordTest');
+		 data.vk.should.equal('vk_id_second');
 		client1.disconnect();		      
 	      	done();
 	  });
@@ -262,8 +263,8 @@ it('Game Not Right Word', function(done){
 	    });
 
 	    client2.on('better_word', function(word){
-	          word.should.equal('MochaTestWordTestBetter');
-		 	client2.disconnect();	
+	           word.should.equal('MochaTestWordTestBetter');
+		   client2.disconnect();	
 		  
 	    });	  
 		
@@ -278,17 +279,16 @@ it('Game Not Right Word', function(done){
 		data.message.should.equal("start game"); 
 	    });
 
-	    client4.on('word', function(word){
-	       word.should.equal('MochaTestWordTestBetter');
-	
+	    client4.on('word', function(data){
+	       data.word.should.equal('MochaTestWordTestBetter');
+	        data.vk.should.equal('vk_id_second');
 	        
 	    });	        
 		
-		client4.on('better_word', function(word){
-			
-	       		word.should.equal('MochaTestWordTestBetter');
-	    		client4.disconnect();	
-			done();
+	     client4.on('better_word', function(word){
+	       	word.should.equal('MochaTestWordTestBetter');
+	    	client4.disconnect();	
+		done();
 	    });
 
 	  });
@@ -298,8 +298,7 @@ it('Game Not Right Word', function(done){
 	  var numUsers = 0;
 	  client1.on('new user', function(usersName){
 	    numUsers += 1;
-	     console.log(usersName);  
-
+	 
 	    if(numUsers === 3){ // проверка на то что отправляем только в указанную комнату
 	       client1.emit('start_game');
 	    }
@@ -307,11 +306,12 @@ it('Game Not Right Word', function(done){
 	  
  
 	  
-	 client1.on('estimate', function(word){
-		console.log(word);
-		word.should.equal('MochaTestWordTestBetter');
-		client1.emit('better', word);
-		client1.disconnect();		      
+	 client1.on('estimate', function(data){
+		 
+		data.word.should.equal('MochaTestWordTestBetter');
+		data.vk.should.equal('vk_id_second');
+		client1.emit('better', data.word );
+		client1.disconnect();			      
 	      	
 	  });
 
@@ -344,7 +344,7 @@ it('Game Worse Attempt Word', function(done){
 	 	client2.emit('word', worseWord);
 	    });
 
-	    client2.on('better_word', function(word){
+	    client2.on('worse_word', function(word){
 	          word.should.equal(worseWord);
 		 client2.disconnect();	
 		  
@@ -361,13 +361,12 @@ it('Game Worse Attempt Word', function(done){
 		data.message.should.equal("start game"); 
 	    });
 
-	    client4.on('word', function(word){
-	       word.should.equal(worseWord);
-	
-	        
+	    client4.on('word', function(data){
+	       data.word.should.equal(worseWord);
+	       data.vk.should.equal('vk_id_second');
 	    });	        
 		
-		client4.on('worse_word', function(word){
+	    client4.on('worse_word', function(word){
 			
 	       		word.should.equal(worseWord);
 	    		client4.disconnect();	
@@ -381,7 +380,7 @@ it('Game Worse Attempt Word', function(done){
 	  var numUsers = 0;
 	  client1.on('new user', function(usersName){
 	    numUsers += 1;
-	     console.log(usersName);  
+	      
 
 	    if(numUsers === 3){ // проверка на то что отправляем только в указанную комнату
 	       client1.emit('start_game');
@@ -389,16 +388,98 @@ it('Game Worse Attempt Word', function(done){
 	  });
 	  
 	 
-	 client1.on('estimate', function(word){
-		console.log(word);
-		word.should.equal(worseWord);
-		client1.emit('worse', word);
+	 client1.on('estimate', function(data){
+		 
+		data.word.should.equal(worseWord);
+		client1.emit('worse', data.word);
 		client1.disconnect();		      
 	      	
 	  });
 
 	});
      })
+
+
+   it('Game Win Attempt Word', function(done){
+	Game.findById('5757dd3e5fd0a2ae6f881828', function(err, model){
+	if (err){
+		err.should.equal("");
+	}
+	   chatUser1.game = model;
+	  
+	   var client1 = io.connect(socketURL);
+
+	   var winWord = "WinWord";
+	  client1.on('connect', function(data){
+	    client1.emit('handshake', chatUser1);
+	 
+	    var client2 = io.connect(socketURL);
+
+	    client2.on('connect', function(data){
+	      client2.emit('handshake', chatUser2);
+	    });
+              
+            client2.on('on_start_game', function(data){
+	      	data.file.should.equal("uploads/file-1465376062453.png");
+		data.message.should.equal("start game");
+	 	client2.emit('word', winWord);
+	    });
+
+	    client2.on('better_word', function(word){
+	          word.should.equal(winWord);
+		 client2.disconnect();	
+		  
+	    });	  
+		
+	var client4 = io.connect(socketURL);
+
+	    client4.on('connect', function(data){
+	      client4.emit('handshake', chatUser4);
+	    });
+              
+            client4.on('on_start_game', function(data){
+	      	data.file.should.equal("uploads/file-1465376062453.png");
+		data.message.should.equal("start game"); 
+	    });
+
+	    client4.on('word', function(data){
+	       data.word.should.equal(winWord);
+	       data.vk.should.equal('vk_id_second');
+	        
+	    });	        
+		
+		client4.on('win', function(data){
+	       		data.word.should.equal(winWord);
+			data.vk.should.equal('vk_id_second');
+	    		client4.disconnect();	
+			done();
+	    });
+
+	  });
+	
+ 
+
+	  var numUsers = 0;
+	  client1.on('new user', function(usersName){
+	    numUsers += 1;
+	  
+	    if(numUsers === 3){ // проверка на то что отправляем только в указанную комнату
+	       client1.emit('start_game');
+	    }
+	  });
+	  
+	 
+	 client1.on('estimate', function(data){
+		 
+		data.word.should.equal(winWord);
+		
+		client1.emit('winner',{ word : data.word,vk : data.vk});
+		client1.disconnect();		      
+	      	
+	  });
+
+	});
+     })	
 
 });
 

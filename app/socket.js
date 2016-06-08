@@ -80,14 +80,16 @@ module.exports = function(http){
 		socket.on('word', function(word){
 			var game = getGameById(socket.room);
 			var wordLowerCase = game.gameModel.word.toLowerCase(); 
+			
 			var prevWordLowerCase =word.toLowerCase();
+			var answer = {word : word , vk : socket.vk};
 			if (wordLowerCase == prevWordLowerCase){
-				io.to(socket.room).emit('win', word);
+				io.to(socket.room).emit('win', answer);
 			}else {
-				io.to(socket.room).emit('word', word);
+				io.to(socket.room).emit('word', answer);
 			}
 			if (game.masterSocket != null){
-				game.masterSocket.emit('estimate', word);
+				game.masterSocket.emit('estimate', answer);
 			}	
 		})
 	      socket.on('better', function(word){
@@ -97,6 +99,10 @@ module.exports = function(http){
 	      socket.on('worse', function(word){
 			console.log(word);
 			io.to(socket.room).emit('worse_word', word);
+	      });	
+	      socket.on('winner', function(data){
+			console.log(data.word);
+			io.to(socket.room).emit('win',data);
 	      });	
 	});
 	
