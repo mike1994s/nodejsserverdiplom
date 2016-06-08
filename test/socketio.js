@@ -34,8 +34,10 @@ describe("Chat Server",function(){
 	      client3.emit('handshake', chatUser3);
 	    });
 
-	    client3.on('new user', function(usersName){
-	      usersName.should.equal(chatUser3.vk_id + " has joined.");
+	    client3.on('new user', function(data){
+	      data.message.should.equal(chatUser3.vk_id + " has joined.");
+	      data.id.should.equal(chatUser3.vk_id);
+	     data.vks.length.should.equal(0);
 	      client3.disconnect();
 	    });
 	 
@@ -46,19 +48,22 @@ describe("Chat Server",function(){
 	    });
 
 	    client2.on('new user', function(usersName){
-	      usersName.should.equal(chatUser2.vk_id + " has joined.");
+              data.message.should.equal(chatUser2.vk_id + " has joined.");
+	      data.id.should.equal(chatUser2.vk_id);
+	    	 data.vks.length.should.equal(1);
 	      client2.disconnect();
 	    });
 
 	  });
 
 	  var numUsers = 0;
-	  client1.on('new user', function(usersName){
+	  client1.on('new user', function(data){
 	    numUsers += 1;
-	     console.log(usersName);  
+	     console.log(data);  
 
 	    if(numUsers === 2){ // проверка на то что отправляем только в указанную комнату
-	      usersName.should.equal(chatUser2.vk_id + " has joined.");
+	      data.message.should.equal(chatUser2.vk_id + " has joined.");
+	      data.id.should.equal(chatUser2.vk_id);
 	      client1.disconnect();
 	      done();
 	    }
@@ -230,6 +235,7 @@ it('Game Not Right Word', function(done){
 	
 	});
      })
+
 
 });
 

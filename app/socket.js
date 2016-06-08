@@ -41,6 +41,17 @@ var dataGame =  require('./DataGame').DataGame;
 		game.add(socket, isLead, gameModel);
 		console.log(games.length);
 	} 
+	function getArrUserByRoomVkId(idRoom){
+		var game = getGameById(idRoom);
+		var sockets = game.sockets;
+		var arr = [];
+		if (game.masterSocket != null)
+			arr.push(game.masterSocket.vk);
+		for (var i = 0; i < sockets.length; ++i){
+			arr.push(sockets[i].vk);
+		}
+		return arr;
+	}
 module.exports = function(http){
 	var io = socketIO.listen(http);
 	io.sockets.on('connection', function (socket) {
@@ -48,11 +59,14 @@ module.exports = function(http){
 		 socket.on('handshake',function(user){
    			socket.join(user.id_room);
 			socket.room = user.id_room;
+			socket.vk = user.vk_id;
 			console.log(socket.room + "   " + user.vk_id);
 			console.log(user.game);
+			var allVks = getArrUserByRoomVkId(socket.room);
 			addInCurrentOrCreateRoom(socket.room, socket, user.is_lead, user.game);
-		
-			io.to(socket.room).emit('new user', user.vk_id + " has joined.");
+			io.to(socket.room).emit('new user', { message :user.vk_id + " has joined.",
+								id : user.vk_id,
+								vks : allVks});
 		 })
 		
 		socket.on('start_game', function(data){
