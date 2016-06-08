@@ -1,6 +1,5 @@
 var supertest = require("supertest");
 var should = require("should");
- 
 // This agent refers to PORT where program is runninng.
 
 var server = supertest.agent("http://localhost:8090");
@@ -106,5 +105,6 @@ describe("SAMPLE unit test",function(){
 	res.status.should.equal(200);
       done();
     });
-  });
-}); 
+   });
+ });
+require("./socketio"); 
