@@ -4,9 +4,11 @@ var User = require('../models/User').User;
 var fs = require('fs');
 var _VK_TYPE = "vk";
 var _FB_TYPE = "fb"; 
-var multer  = require('multer')
+var multer  = require('multer');
+var gcm = require('node-gcm');
 var upload = multer().single('file')
 var storage =   multer.diskStorage({
+	
   destination: function (req, file, callback) {
     callback(null, './uploads');
   },
@@ -18,6 +20,29 @@ var storage =   multer.diskStorage({
     callback(null, file.fieldname + '-' + Date.now() + "." + extension);
   }
 })
+
+function sendNotification(){
+	var message = new gcm.Message();
+	return;
+	message.addData('hello', 'world');
+	message.addNotification('title', 'Hello');
+	message.addNotification('icon', 'ic_launcher');
+	message.addNotification('body', 'World');
+
+	//https://github.com/ToothlessGear/node-gcm/blob/master/examples/notification.js
+	//Add your mobile device registration tokens here
+	var regTokens = [];
+	//Replace your developer API key with GCM enabled here
+	var sender = new gcm.Sender();
+
+	sender.send(message, regTokens, function (err, response) {
+   		if(err) {
+      			console.error(err);
+   		 } else {
+      			console.log(response);
+   		 }
+	});
+}
 var uploadFile = multer({ storage : storage}).single('file');
 exports.post = function(req, res) {
 	console.log("{/startgame} have been called");
@@ -73,7 +98,8 @@ exports.post = function(req, res) {
 				});
 				return;
 			}
-			console.log(game) // form files
+			console.log(game); // form files
+			sendNotification();
 			res.json({
 				code :"1",
 				answer : "ok",
