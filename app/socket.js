@@ -86,10 +86,14 @@ module.exports = function(http){
 			}else {
 				io.to(socket.room).emit('word', word);
 			}
-			if (game.masterSocket == null){
-				game.masterSocket.emit('estimate');
+			if (game.masterSocket != null){
+				game.masterSocket.emit('estimate', word);
 			}	
 		})
+	      socket.on('better', function(word){
+			console.log(word);
+			io.to(socket.room).emit('better_word', word);
+	      });	
 	});
 	
 	return io;

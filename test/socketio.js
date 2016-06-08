@@ -214,7 +214,6 @@ it('Game Not Right Word', function(done){
 
 	  });
 	
-	 
  
 
 	  var numUsers = 0;
@@ -236,6 +235,91 @@ it('Game Not Right Word', function(done){
 	});
      })
 
+
+    it('Game Better Word', function(done){
+	Game.findById('5757dd3e5fd0a2ae6f881828', function(err, model){
+		if (err){
+			err.should.equal("");
+		}
+	   chatUser1.game = model;
+	  
+	   var client1 = io.connect(socketURL);
+
+
+	  client1.on('connect', function(data){
+	    client1.emit('handshake', chatUser1);
+	 
+	    var client2 = io.connect(socketURL);
+
+	    client2.on('connect', function(data){
+	      client2.emit('handshake', chatUser2);
+	    });
+              
+            client2.on('on_start_game', function(data){
+	      	data.file.should.equal("uploads/file-1465376062453.png");
+		data.message.should.equal("start game");
+	 	client2.emit('word', 'MochaTestWordTestBetter');
+	    });
+
+	    client2.on('better_word', function(word){
+	          word.should.equal('MochaTestWordTestBetter');
+		 	client2.disconnect();	
+		  
+	    });	  
+		
+	var client4 = io.connect(socketURL);
+
+	    client4.on('connect', function(data){
+	      client4.emit('handshake', chatUser4);
+	    });
+              
+            client4.on('on_start_game', function(data){
+	      	data.file.should.equal("uploads/file-1465376062453.png");
+		data.message.should.equal("start game"); 
+	    });
+
+	    client4.on('word', function(word){
+	       word.should.equal('MochaTestWordTestBetter');
+	
+	        
+	    });	        
+		
+		client4.on('better_word', function(word){
+			
+	       		word.should.equal('MochaTestWordTestBetter');
+	    		client4.disconnect();	
+			done();
+	    });
+
+	  });
+	
+ 
+
+	  var numUsers = 0;
+	  client1.on('new user', function(usersName){
+	    numUsers += 1;
+	     console.log(usersName);  
+
+	    if(numUsers === 3){ // проверка на то что отправляем только в указанную комнату
+	       client1.emit('start_game');
+	    }
+	  });
+	  
+	  client1.on('win', function(word){
+		 
+		 
+	  });
+	  
+	 client1.on('estimate', function(word){
+		console.log(word);
+		word.should.equal('MochaTestWordTestBetter');
+		client1.emit('better', word);
+		client1.disconnect();		      
+	      	
+	  });
+
+	});
+     })
 
 });
 

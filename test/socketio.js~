@@ -214,7 +214,6 @@ it('Game Not Right Word', function(done){
 
 	  });
 	
-	 
  
 
 	  var numUsers = 0;
@@ -236,13 +235,14 @@ it('Game Not Right Word', function(done){
 	});
      })
 
-	it('Game Not Right Word', function(done){
+
+    it('Game Better Word', function(done){
 	Game.findById('5757dd3e5fd0a2ae6f881828', function(err, model){
 		if (err){
 			err.should.equal("");
 		}
 	   chatUser1.game = model;
-	   console.log(model);
+	  
 	   var client1 = io.connect(socketURL);
 
 
@@ -258,12 +258,13 @@ it('Game Not Right Word', function(done){
             client2.on('on_start_game', function(data){
 	      	data.file.should.equal("uploads/file-1465376062453.png");
 		data.message.should.equal("start game");
-	 	client2.emit('word', 'MochaTestWordTest');
+	 	client2.emit('word', 'MochaTestWordTestBetter');
 	    });
 
-	    client2.on('word', function(data){
-	       
-		client2.disconnect();
+	    client2.on('better_word', function(word){
+	          word.should.equal('MochaTestWordTestBetter');
+		 	client2.disconnect();	
+		  
 	    });	  
 		
 	var client4 = io.connect(socketURL);
@@ -278,11 +279,21 @@ it('Game Not Right Word', function(done){
 	    });
 
 	    client4.on('word', function(word){
-	       word.should.equal('MochaTestWordTest');
-	       client4.disconnect();
+	       word.should.equal('MochaTestWordTestBetter');
+	
+	        
 	    });	        
+		
+		client4.on('better_word', function(word){
+			
+	       		word.should.equal('MochaTestWordTestBetter');
+	    		client4.disconnect();	
+			done();
+	    });
 
 	  });
+	
+ 
 
 	  var numUsers = 0;
 	  client1.on('new user', function(usersName){
@@ -295,12 +306,20 @@ it('Game Not Right Word', function(done){
 	  });
 	  
 	  client1.on('win', function(word){
-		word.should.equal('MochaTestWord');
-		client1.disconnect();		      
-	      	done();
+		 
+		 
 	  });
-	
+	  
+	 client1.on('estimate', function(word){
+		console.log(word);
+		word.should.equal('MochaTestWordTestBetter');
+		client1.emit('better', word);
+		client1.disconnect();		      
+	      	
+	  });
+
 	});
      })
+
 });
 
