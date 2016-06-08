@@ -94,6 +94,10 @@ module.exports = function(http){
 			console.log(word);
 			io.to(socket.room).emit('better_word', word);
 	      });	
+	      socket.on('worse', function(word){
+			console.log(word);
+			io.to(socket.room).emit('worse_word', word);
+	      });	
 	});
 	
 	return io;
