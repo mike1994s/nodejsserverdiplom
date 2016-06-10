@@ -26,8 +26,7 @@
     "socket.io": "^1.4.6",
     "nconf": "~0.8.4",
     "bluebird": "~3.4.0",
-    "q": "~1.4.1",
-    "supertest": "~1.2.0",
-    "connect-busboy": "0.0.2",
+    "q": "~1.4.1", 
+    "connect-busboy": "0.0.2"
   }
 }
