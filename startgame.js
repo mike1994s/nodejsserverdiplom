@@ -20,40 +20,20 @@ var storage =   multer.diskStorage({
     callback(null, file.fieldname + '-' + Date.now() + "." + extension);
   }
 })
-function getFcmMyFriendsIds(user){
-	var arrFriends = user.vk.friends;
-	console.log(arrFriends);
-	User.find({}, function(err, users){
-		if (err){
-			console.log(err);
-			return [];
-		}
-		console.dir(users);
-		var regTokens = [];
-		users.forEach(function(user) {
-			console.dir(user);
-      			if (arrFriends.indexOf(user.vk.id) != -1){
-				regTokens.push(user.fsm);
-			}
-    		});	
-		return regTokens;
-	});
-}
 
-
-function sendNotification(tokens, user, gameId){
+function sendNotification(){
 	var message = new gcm.Message();
-
-	
-	message.addData('leading', user.vk.id);
-	message.addData('id_game', gameId);
- 
+	return;
+	message.addData('hello', 'world');
+	message.addNotification('title', 'Hello');
+	message.addNotification('icon', 'ic_launcher');
+	message.addNotification('body', 'World');
 
 	//https://github.com/ToothlessGear/node-gcm/blob/master/examples/notification.js
 	//Add your mobile device registration tokens here
-	var regTokens =tokens;
+	var regTokens = [];
 	//Replace your developer API key with GCM enabled here
-	var sender = new gcm.Sender('AIzaSyDqbKDS6ATiItrcjIYJdsvbChpGnp_DrIc');
+	var sender = new gcm.Sender();
 
 	sender.send(message, regTokens, function (err, response) {
    		if(err) {
@@ -95,9 +75,7 @@ exports.post = function(req, res) {
 		fileObj.encoding = fileData.encoding;
 		fileObj.mimetype = fileData.mimetype;
 		fileObj.filename = fileData.filename;
-		var fileName = fileData.path;
-		fileName = fileName.substring(fileName.lastIndexOf('/')+1,fileName.length);
-		fileObj.path = fileName;
+		fileObj.path = fileData.path;
 		fileObj.size = fileData.size;
 		game.file = fileObj;
 		game.save(function (errSave, game, numAffected) {
@@ -121,47 +99,15 @@ exports.post = function(req, res) {
 				return;
 			}
 			console.log(game); // form files
-	
-
-				var arrFriends = user.vk.friends;
-	console.log(arrFriends);
-		User.find({}, function(err, users){
-			if (err){
-				console.log(err);
-				res.json({
-					code :"0",
-					answer : err,
-					data : [],
-				});
-				return;	
-			}
-			console.dir(users);
-			var regTokens = [];
-			/*users.forEach(function(user) {
-				console.dir(user);
-				if (arrFriends.indexOf(user.vk.id) != -1){
-					regTokens.push(user.fsm);
-				}
-			});*/
-			 console.log("regTokens" + regTokens);
-
-			//sendNotification(regTokens, user, game._id);
+			sendNotification();
 			res.json({
 				code :"1",
 				answer : "ok",
 				data : [{
 					game_one : game,
 					user : user
-				//	tokensFriends :regTokens 
 				}],
 			});
-			return;
-	
-		});
-
-			
-
-			
 
 })
 .catch(function(err){

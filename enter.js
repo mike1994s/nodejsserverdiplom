@@ -26,7 +26,7 @@ exports.post = function(req, res) {
 	return;	
      }
     
-    //console.log(obj.friendsId);
+    console.log(obj.friendsId);
     var promise = User.findOne({'id_phone':obj.idphone}).exec();
     promise.then(function(user) {
 	console.log("find" + user);
@@ -38,10 +38,9 @@ exports.post = function(req, res) {
 	}
 	if (obj.type == _VK_TYPE){
 		user.vk.id = obj.id;
-		user.vk.friends = obj.friendsId;
-/*addArrayFromArray(user.vk.friends,
+		user.vk.friends = addArrayFromArray(user.vk.friends,
 					 obj.friendsId,
-					 arrayNotContain);*/
+					 arrayNotContain);
 	}
 	return user.save();
 })

@@ -190,7 +190,7 @@ module.exports = function(http){
 			io.to(socket.room).emit('win',data);
 	      });
 	      socket.on('test', function(data){
-			console.log("test");
+			console.log("winner");
 			//console.log(data.word);
 			io.sockets.emit('test',data);
 	      });
